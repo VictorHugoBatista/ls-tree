@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+void listdir(char *dirname, char level) {
+    DIR *dir = opendir(dirname);
+
+    struct dirent *entry;
+
+    unsigned char tabs[10] = "";
+    for (int i = 0; i <= level; i++) {
+        strcat(tabs, "  ");
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+
+        printf("%s - (%x)%20s - %lu\n", tabs, entry->d_type, entry->d_name, entry->d_ino);
+        
+        if (entry->d_type == 4) {
+            char *current_dirname = entry-> d_name;
+            char *path = realpath(current_dirname, NULL);
+
+            char new_dirname[40];
+            strcpy(new_dirname, dirname);
+            strcat(new_dirname, "/");
+            strcat(new_dirname, current_dirname);
+            
+            listdir(new_dirname, level + 1);
+        }
+    }
+
+    closedir(dir);
+}
+
+int main(int argc, char *argv[]) {
+    char *dirname = argv[1];
+    char level_zero = 0;
+
+    listdir(dirname, level_zero);
+
+    return EXIT_SUCCESS;
+}
