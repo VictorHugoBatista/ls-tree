@@ -5,15 +5,22 @@
 #include <unistd.h>
 #include <string.h>
 
+unsigned char* maketabs(char size) {
+    char *tabs = malloc(10);
+
+    for (int i = 0; i <= size; i++) {
+        strcat(tabs, "  ");
+    }
+
+    return tabs;
+}
+
 void listdir(char *dirname, char level) {
     DIR *dir = opendir(dirname);
 
     struct dirent *entry;
 
-    unsigned char tabs[10] = "";
-    for (int i = 0; i <= level; i++) {
-        strcat(tabs, "  ");
-    }
+    unsigned char *tabs = maketabs(level);
 
     while ((entry = readdir(dir)) != NULL) {
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
