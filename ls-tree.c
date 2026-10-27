@@ -39,7 +39,7 @@ void listdir(char *dirname, char level) {
             char *current_dirname = entry-> d_name;
             char *path = realpath(current_dirname, NULL);
 
-            char new_dirname[40];
+            char new_dirname[strlen(dirname) + strlen(current_dirname) + 1];
             strcpy(new_dirname, dirname);
             strcat(new_dirname, "/");
             strcat(new_dirname, current_dirname);
