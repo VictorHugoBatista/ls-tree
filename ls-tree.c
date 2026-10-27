@@ -6,10 +6,10 @@
 #include <string.h>
 
 char* maketabs(char size) {
-    char *tabs = malloc(10);
+    char *tabs = malloc(size + 1);
     tabs[0] = '\0';
 
-    for (int i = 0; i <= size; i++) {
+    for (int i = 0; i < size; i++) {
         strcat(tabs, " ");
     }
 
