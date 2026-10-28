@@ -81,9 +81,11 @@ void listdir(char *path, char level) {
 
 /**
  * Função principal, recebe o parâmetro do path para começar a leitura de arquivos.
+ * O padrão é o working dir.
  */
 int main(int argc, char *argv[]) {
-    char *path = argv[1];
+    char *path = argv[1] != NULL ? argv[1] : ".";
+
     char level_zero = 0;
 
     listdir(path, level_zero);
