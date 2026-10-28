@@ -5,7 +5,9 @@
 #include <unistd.h>
 #include <string.h>
 
-// Cria os espaços dos níveis de diretórios.
+/**
+ * Cria os espaços para os níveis de diretórios e arquivos.
+ */
 char* maketabs(char size) {
     // Aloca o espaço de memória para cada espaço mais o caractere inicial da string (\0).
     char *tabs = malloc(size + 1);
@@ -24,6 +26,30 @@ char* maketabs(char size) {
     return tabs;
 }
 
+// Assinatura de listdir precisa ser acionada pela recursão
+// criada pela chamada cruzada de listdir e listnextdir.
+void listdir(char *path, char level);
+
+/**
+ * 2. Recebe o path atual, um nome de diretório, que deve estar dentro
+ * do path e o nível para aumentar as tabs no próximo nível de arquivos.
+ * Chama listdir de volta (segunda parte da recursão).
+ */
+void listnextdir(char *current_dirname, char *path, char level) {
+    // Cria a string com o tamanho preciso que vai tomar. Evida segerror por overflow.
+    char new_path[strlen(path) + strlen(current_dirname) + 1];
+    strcpy(new_path, path);
+    strcat(new_path, "/");
+    strcat(new_path, current_dirname);
+    
+    // Recursão.
+    listdir(new_path, level + 1);
+}
+
+/**
+ * 1. Lista os arquivos de um diretório, acionando 'listnextdir'
+ * para todos os diretórios (metade da recursão).
+ */
 void listdir(char *path, char level) {
     DIR *dir = opendir(path);
 
@@ -44,14 +70,7 @@ void listdir(char *path, char level) {
         if (entry->d_type == 4) {
             char *current_dirname = entry-> d_name;
 
-            // Cria a string com o tamanho preciso que vai tomar. Evida segerror por overflow.
-            char new_path[strlen(path) + strlen(current_dirname) + 1];
-            strcpy(new_path, path);
-            strcat(new_path, "/");
-            strcat(new_path, current_dirname);
-            
-            // Recursão.
-            listdir(new_path, level + 1);
+            listnextdir(current_dirname, path, level);
         }
     }
 
@@ -60,6 +79,9 @@ void listdir(char *path, char level) {
     closedir(dir);
 }
 
+/**
+ * Função principal, recebe o parâmetro do path para começar a leitura de arquivos.
+ */
 int main(int argc, char *argv[]) {
     char *path = argv[1];
     char level_zero = 0;
