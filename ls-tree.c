@@ -24,8 +24,8 @@ char* maketabs(char size) {
     return tabs;
 }
 
-void listdir(char *dirname, char level) {
-    DIR *dir = opendir(dirname);
+void listdir(char *path, char level) {
+    DIR *dir = opendir(path);
 
     struct dirent *entry;
 
@@ -43,16 +43,15 @@ void listdir(char *dirname, char level) {
         // Monta o path do próximo diretório e o chama novamente.
         if (entry->d_type == 4) {
             char *current_dirname = entry-> d_name;
-            char *path = realpath(current_dirname, NULL);
 
             // Cria a string com o tamanho preciso que vai tomar. Evida segerror por overflow.
-            char new_dirname[strlen(dirname) + strlen(current_dirname) + 1];
-            strcpy(new_dirname, dirname);
-            strcat(new_dirname, "/");
-            strcat(new_dirname, current_dirname);
+            char new_path[strlen(path) + strlen(current_dirname) + 1];
+            strcpy(new_path, path);
+            strcat(new_path, "/");
+            strcat(new_path, current_dirname);
             
             // Recursão.
-            listdir(new_dirname, level + 1);
+            listdir(new_path, level + 1);
         }
     }
 
@@ -62,10 +61,10 @@ void listdir(char *dirname, char level) {
 }
 
 int main(int argc, char *argv[]) {
-    char *dirname = argv[1];
+    char *path = argv[1];
     char level_zero = 0;
 
-    listdir(dirname, level_zero);
+    listdir(path, level_zero);
 
     return EXIT_SUCCESS;
 }
